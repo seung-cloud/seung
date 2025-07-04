@@ -1,0 +1,26 @@
+<!-- public/redirect.html -->
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>소셜 로그인 인증 중...</title>
+</head>
+
+<body>
+    <script>
+        // 인증 코드 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        // provider 구분이 필요하면 state 값 등도 체크 가능
+        let provider = "kakao";
+        if (window.location.href.includes("naver")) provider = "naver";
+        if (code && window.opener) {
+            window.opener.postMessage({ provider, code }, "*");
+            window.close();
+        }
+    </script>
+    <h2>로그인 처리 중입니다...</h2>
+</body>
+
+</html>
