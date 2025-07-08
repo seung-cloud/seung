@@ -8,7 +8,7 @@ import * as Google from "expo-auth-session/providers/google";
 const KAKAO_REST_API_KEY = "971cf7c87284261f9d101570f8704a98";
 const NAVER_CLIENT_ID = "WLdgbWVEISBQ2m2g1mef";
 const NAVER_STATE = "RANDOM_STATE_ABC123"; // 아무 임의 문자열
-const REDIRECT_URI = AuthSession.makeRedirectUri();
+const REDIRECT_URI = "http://localhost:8081/redirect.html";
 const isWeb = typeof window !== "undefined" && !!window.document;
 
 export default function MainScreen() {
@@ -31,22 +31,40 @@ export default function MainScreen() {
 
     // ---- 카카오/네이버 팝업 콜백 리스너 (웹만) ----
     React.useEffect(() => {
-        // 새 창(팝업)에서 code를 window.postMessage로 보낼 때 받음
-        const handler = (event: any) => {
+        const handler = async (event) => {
             if (event.data && event.data.code) {
+                setShowLoginModal(false);
+                const code = event.data.code;
                 if (event.data.provider === "naver") {
-                    alert("네이버 로그인 성공!\ncode: " + event.data.code);
-                    setShowLoginModal(false);
+                    // 네이버 토큰 요청(실제 서비스는 서버에서 처리 권장!)
+                    /*
+                    const res = await fetch(
+                      `https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=네이버_Client_ID&client_secret=네이버_Secret&code=${code}&state=RANDOM_STATE_ABC123`
+                    );
+                    const tokenInfo = await res.json();
+                    console.log(tokenInfo);
+                    */
+                    alert("네이버 로그인 성공! code: " + code);
                 }
                 if (event.data.provider === "kakao") {
-                    alert("카카오 로그인 성공!\ncode: " + event.data.code);
-                    setShowLoginModal(false);
+                    // 카카오 토큰 요청(실제 서비스는 서버에서 처리 권장!)
+                    /*
+                    const res = await fetch(
+                      `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=카카오_REST_API_KEY&redirect_uri=REDIRECT_URI&code=${code}`,
+                      { method: "POST", headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+                    );
+                    const tokenInfo = await res.json();
+                    console.log(tokenInfo);
+                    */
+                    alert("카카오 로그인 성공! code: " + code);
                 }
             }
         };
         window.addEventListener("message", handler);
         return () => window.removeEventListener("message", handler);
     }, []);
+
+
 
     // ---- 카카오 로그인 ----
     const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
